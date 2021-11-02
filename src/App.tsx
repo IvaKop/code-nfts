@@ -1,29 +1,18 @@
-import logo from './logo.svg'
-import './App.css'
+import { ChakraProvider } from '@chakra-ui/react'
+import { MoralisProvider } from 'react-moralis'
 
-import { ChakraProvider, Button } from '@chakra-ui/react'
+import Auth from './components/Auth'
 
 function App() {
     return (
-        <ChakraProvider>
-            <div className="App">
-                <header className="App-header">
-                    <img src={logo} className="App-logo" alt="logo" />
-                    <p>
-                        Edit <code>src/App.tsx</code> and save to reload.
-                    </p>
-                    <Button variant="outline">Login</Button>
-                    <a
-                        className="App-link"
-                        href="https://reactjs.org"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Learn React
-                    </a>
-                </header>
-            </div>
-        </ChakraProvider>
+        <MoralisProvider
+            appId={process.env.REACT_APP_MORALIS_APP_ID || ''}
+            serverUrl={process.env.REACT_APP_MORALIS_SERVER_URL || ''}
+        >
+            <ChakraProvider>
+                <Auth />
+            </ChakraProvider>
+        </MoralisProvider>
     )
 }
 
