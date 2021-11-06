@@ -1,8 +1,8 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import { MoralisProvider } from 'react-moralis'
 
-import Auth from './components/Auth'
 import CodeEditor from './components/CodeEditor'
+import Navigation from './components/Navigation'
 
 function App() {
     return (
@@ -11,7 +11,7 @@ function App() {
             serverUrl={process.env.REACT_APP_MORALIS_SERVER_URL || ''}
         >
             <ChakraProvider>
-                <Auth />
+                <Navigation />
                 <CodeEditor />
             </ChakraProvider>
         </MoralisProvider>

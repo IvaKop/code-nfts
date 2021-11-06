@@ -20,7 +20,7 @@ const Auth = () => {
     const logoutUser = async () => {
         await logout()
     }
-
+    console.log(isAuthenticated)
     if (isAuthenticated) {
         return (
             <Button onClick={logoutUser} isLoading={isLoggingOut}>
@@ -32,8 +32,14 @@ const Auth = () => {
         <Button
             onClick={authenticateUser}
             isLoading={isWeb3EnableLoading || isAuthenticating}
+            bg={'pink.400'}
+            href={'#'}
+            color="white"
+            _hover={{
+                bg: 'pink.300',
+            }}
         >
-            Connect
+            Connect wallet
         </Button>
     )
 }

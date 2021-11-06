@@ -1,4 +1,9 @@
 import { UnControlled as CodeMirror } from 'react-codemirror2'
+import { useRef } from 'react'
+import { useScreenshot } from 'use-react-screenshot'
+import controls from './Controls.svg'
+import { Box, Image } from '@chakra-ui/react'
+
 require('codemirror/mode/xml/xml')
 require('codemirror/mode/javascript/javascript')
 
@@ -12,17 +17,39 @@ import 'codemirror/theme/bespin.css'
 
 import './CodeEditor.css'
 const CodeEditor = () => {
+    const ref = useRef(null)
+    const [image, takeScreenshot] = useScreenshot()
+    const getImage = () => takeScreenshot(ref.current)
+    console.log(image)
     return (
-        <CodeMirror
-            value="<h1>I ♥ react-codemirror2</h1>"
-            options={{
-                mode: 'javascript',
-                theme: 'bespin',
-                lineNumbers: true,
-                lineWrapping: true,
-            }}
-            //  onChange={(editor, data, value) => {}}
-        />
+        <Box p={1}>
+            <Box
+                maxW="3xl"
+                ref={ref}
+                borderWidth="1px"
+                borderRadius="lg"
+                margin="auto"
+            >
+                <Image
+                    className="controls"
+                    src={controls}
+                    m={1.5}
+                    position="relative"
+                />
+                <CodeMirror
+                    options={{
+                        mode: 'javascript',
+                        theme: 'material',
+                        lineNumbers: true,
+                        lineWrapping: true,
+                    }}
+                ></CodeMirror>
+            </Box>
+
+            <button onClick={getImage}>take screenshot</button>
+
+            <Image width={'100%'} src={image} alt={'Screenshot'} />
+        </Box>
     )
 }
 
