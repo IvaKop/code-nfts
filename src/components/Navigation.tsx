@@ -11,7 +11,6 @@ import {
     PopoverTrigger,
     PopoverContent,
     useColorModeValue,
-    useBreakpointValue,
     useDisclosure,
 } from '@chakra-ui/react'
 import {
@@ -21,6 +20,8 @@ import {
     ChevronRightIcon,
     UpDownIcon,
 } from '@chakra-ui/icons'
+
+import { Link as RouterLink } from 'react-router-dom'
 
 import Auth from './Auth'
 
@@ -37,7 +38,7 @@ export default function WithSubnavigation() {
                 px={{ base: 4 }}
                 borderBottom={1}
                 borderStyle={'solid'}
-                borderColor={useColorModeValue('gray.200', 'gray.900')}
+                borderColor={useColorModeValue('gray.200', 'gray.700')}
                 align={'center'}
             >
                 <Flex
@@ -62,25 +63,20 @@ export default function WithSubnavigation() {
                     flex={{ base: 1 }}
                     justify={{ base: 'center', md: 'start' }}
                 >
-                    <Text
-                        textAlign={useBreakpointValue({
-                            base: 'center',
-                            md: 'left',
-                        })}
-                        fontFamily={'heading'}
-                        color={useColorModeValue('gray.800', 'white')}
-                    >
-                        <UpDownIcon
-                            transform="rotate(90deg)"
-                            fontSize="x-large"
-                        />
-                    </Text>
+                    <UpDownIcon transform="rotate(90deg)" fontSize="x-large" />
 
                     <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
                         <DesktopNav />
                     </Flex>
                 </Flex>
-                <Auth />
+                <Stack
+                    flex={{ base: 1, md: 0 }}
+                    justify={'flex-end'}
+                    direction={'row'}
+                    spacing={6}
+                >
+                    <Auth />
+                </Stack>
             </Flex>
 
             <Collapse in={isOpen} animateOpacity>
@@ -103,7 +99,7 @@ const DesktopNav = () => {
                         <PopoverTrigger>
                             <Link
                                 p={2}
-                                href={navItem.href ?? '#'}
+                                to={navItem.to ?? '#'}
                                 fontSize={'sm'}
                                 fontWeight={500}
                                 color={linkColor}
@@ -111,6 +107,7 @@ const DesktopNav = () => {
                                     textDecoration: 'none',
                                     color: linkHoverColor,
                                 }}
+                                as={RouterLink}
                             >
                                 {navItem.label}
                             </Link>
@@ -142,15 +139,16 @@ const DesktopNav = () => {
     )
 }
 
-const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
+const DesktopSubNav = ({ label, to, subLabel }: NavItem) => {
     return (
         <Link
-            href={href}
+            to={to}
             role={'group'}
             display={'block'}
             p={2}
             rounded={'md'}
             _hover={{ bg: useColorModeValue('pink.50', 'gray.900') }}
+            as={RouterLink}
         >
             <Stack direction={'row'} align={'center'}>
                 <Box>
@@ -201,7 +199,7 @@ const MobileNav = () => {
     )
 }
 
-const MobileNavItem = ({ label, children, href }: NavItem) => {
+const MobileNavItem = ({ label, children, to }: NavItem) => {
     const { isOpen, onToggle } = useDisclosure()
 
     return (
@@ -209,7 +207,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
             <Flex
                 py={2}
                 as={Link}
-                href={href ?? '#'}
+                to={to ?? '#'}
                 justify={'space-between'}
                 align={'center'}
                 _hover={{
@@ -248,7 +246,7 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
                 >
                     {children &&
                         children.map(child => (
-                            <Link key={child.label} py={2} href={child.href}>
+                            <Link key={child.label} py={2} to={child.to}>
                                 {child.label}
                             </Link>
                         ))}
@@ -262,34 +260,37 @@ interface NavItem {
     label: string
     subLabel?: string
     children?: Array<NavItem>
-    href?: string
+    to: string
 }
 
 const NAV_ITEMS: Array<NavItem> = [
     {
-        label: 'Explore NFTs',
+        label: 'Explore Code NFTs',
+        to: '/',
+    },
+
+    {
+        label: 'Mint Code NFT',
+        to: '/mint',
     },
     {
-        label: 'My NFTs',
-        children: [
-            {
-                label: 'My tokens',
-                subLabel: 'See your tokens',
-                href: '#',
-            },
-            {
-                label: 'Liked tokens',
-                subLabel: 'See liked tokens',
-                href: '#',
-            },
-        ],
-    },
-    {
-        label: 'Mint NFT',
-        href: '#',
+        label: 'My Code NFTs',
+        to: '/my-code-nfts',
+        // children: [
+        //     {
+        //         label: 'My NFTs',
+        //         subLabel: 'See your tokens',
+        //         to: '#',
+        //     },
+        //     {
+        //         label: 'Liked',
+        //         subLabel: 'See liked NFTs',
+        //         to: '#',
+        //     },
+        // ],
     },
     {
         label: 'About the project',
-        href: '#',
+        to: '/about',
     },
 ]
