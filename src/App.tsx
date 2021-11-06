@@ -2,6 +2,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { MoralisProvider } from 'react-moralis'
 
 import Auth from './components/Auth'
+import CodeEditor from './components/CodeEditor'
 
 function App() {
     return (
@@ -11,6 +12,7 @@ function App() {
         >
             <ChakraProvider>
                 <Auth />
+                <CodeEditor />
             </ChakraProvider>
         </MoralisProvider>
     )
