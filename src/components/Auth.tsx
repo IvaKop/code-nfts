@@ -20,7 +20,7 @@ const Auth = () => {
     const logoutUser = async () => {
         await logout()
     }
-    console.log(isAuthenticated)
+
     if (isAuthenticated) {
         return (
             <Button onClick={logoutUser} isLoading={isLoggingOut}>
