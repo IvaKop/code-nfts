@@ -115,12 +115,15 @@ const CodeEditor = () => {
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-ignore
                         image: imageFile?._ipfs,
-                        attributes: {
-                            language: languages.find(
-                                ({ value }) => language === value,
-                            )?.label,
-                            theme: 'material',
-                        },
+                        attributes: [
+                            {
+                                trait_type: 'Language',
+                                value: languages.find(
+                                    ({ value }) => language === value,
+                                )?.label,
+                            },
+                            { trait_type: 'Code theme', value: 'material' },
+                        ],
                     }
                     const metadataFile = await saveFile(
                         'metadata.json',
@@ -162,7 +165,7 @@ const CodeEditor = () => {
                 gameContract.off('NFTMinted', onTokenMint)
             }
         }
-    }, [gameContract, image])
+    }, [gameContract, image, name])
 
     const mint = async () => {
         try {
@@ -282,7 +285,6 @@ const CodeEditor = () => {
                     ></CodeMirror>
                 </Box>
             </Box>
-            <img src={image} height="300px" />
         </Box>
     )
 }
