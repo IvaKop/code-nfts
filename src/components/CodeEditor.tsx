@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { UnControlled as CodeMirror } from 'react-codemirror2'
 import { useRef } from 'react'
+
 import { useScreenshot } from 'use-react-screenshot'
 import controls from './Controls.svg'
 import { Box, Image, Button, Center } from '@chakra-ui/react'
+import { useMoralisFile } from 'react-moralis'
 
 // web3 magic
 import { ethers, Contract } from 'ethers'
@@ -22,9 +24,11 @@ import 'codemirror/theme/bespin.css'
 import 'codemirror/theme/base16-light.css'
 
 import './CodeEditor.css'
+
 const CodeEditor = () => {
     const [gameContract, setGameContract] = useState<null | Contract>(null)
     const [isMinting, setIsMinting] = useState(false)
+    const { saveFile } = useMoralisFile()
 
     const ref = useRef(null)
     const [image, takeScreenshot] = useScreenshot()
@@ -52,10 +56,58 @@ const CodeEditor = () => {
     }, [])
 
     useEffect(() => {
-        const onTokenMint = (sender: string, tokenId: any, themeId: any) => {
+        const onTokenMint = async (
+            sender: string,
+            tokenId: any,
+            themeId: any,
+        ) => {
             console.log(
                 `NFTMinted - sender: ${sender} tokenId: ${tokenId.toNumber()} themeId: ${themeId.toNumber()}}`,
             )
+            const uploadMetadata = async () => {
+                if (image) {
+                    const imageFile = await saveFile(
+                        'image.png',
+                        { base64: image },
+                        { saveIPFS: true },
+                    )
+                    const metadata = {
+                        name: 'NFT name',
+                        description: 'NFT description',
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        image: imageFile?._ipfs,
+                        language: 'JavaScript',
+                    }
+                    const metadataFile = await saveFile(
+                        'metadata.json',
+                        { base64: btoa(JSON.stringify(metadata)) },
+                        { saveIPFS: true },
+                    )
+
+                    console.log(metadataFile)
+                    return metadataFile
+                }
+            }
+            const metadata = await uploadMetadata()
+
+            if (metadata && gameContract) {
+                try {
+                    const mintTxn = await gameContract.setTokenURI(
+                        2,
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        `ipfs://${metadata._hash}`,
+                    )
+                    await mintTxn.wait()
+
+                    console.log('uriTxn:', mintTxn)
+                    setIsMinting(false)
+                } catch (error) {
+                    console.warn('URIAction Error:', error)
+                    setIsMinting(false)
+                }
+            }
         }
 
         if (gameContract) {
@@ -67,19 +119,16 @@ const CodeEditor = () => {
                 gameContract.off('NFTMinted', onTokenMint)
             }
         }
-    }, [gameContract])
+    }, [gameContract, image])
 
     const mint = async () => {
         try {
+            getImage()
             if (gameContract) {
                 setIsMinting(true)
                 console.log('Minting in progress...')
                 const mintTxn = await gameContract.mint()
                 await mintTxn.wait()
-                console.log('mintTxn:', mintTxn)
-                setIsMinting(false)
-                getImage()
-                console.log(image)
             }
         } catch (error) {
             console.warn('MintAction Error:', error)
@@ -95,6 +144,7 @@ const CodeEditor = () => {
                 borderWidth="1px"
                 margin="auto"
                 bgColor="black"
+                mt={5}
             >
                 <Image
                     className="controls"
@@ -115,7 +165,6 @@ const CodeEditor = () => {
                 <Button
                     onClick={mint}
                     bg={'pink.400'}
-                    href={'#'}
                     color="white"
                     _hover={{
                         bg: 'pink.300',
@@ -124,6 +173,7 @@ const CodeEditor = () => {
                 >
                     Mint Code NFT
                 </Button>
+                {/* <Button onClick={upload}>save</Button> */}
             </Center>
             <Box maxW="xl" margin="auto" mt="5">
                 <Image width="100%" src={image} alt="nft image" />
