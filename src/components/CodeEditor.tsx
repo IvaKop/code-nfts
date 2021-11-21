@@ -79,7 +79,7 @@ const CodeEditor = () => {
     const [tokenId, setTokenId] = useState(null)
     const [language, setLanguage] = useState('javascript')
     const [codeMirrorValue, setCodeMirrorValue] = useState(
-        'function mintMyAwesomeCodeNFT(){\n// Write some amazing code here! \n}',
+        'function mintMyAwesomeCodeNFT(){\n  // Write some amazing code here! \n}',
     )
 
     const [gameContract, setGameContract] = useState<null | Contract>(null)
@@ -223,8 +223,42 @@ const CodeEditor = () => {
         }
     }
 
+    const codeMirror = (
+        <Box
+            ref={ref}
+            position="absolute"
+            w="2xl"
+            top="-100000"
+            left="-10000"
+            borderWidth="1px"
+            margin="auto"
+            bgColor="black"
+        >
+            <Image
+                className="controls"
+                src={controls}
+                m={1.5}
+                position="relative"
+            />
+            <CodeMirror
+                onBeforeChange={(_editor, _data, value) => {
+                    setCodeMirrorValue(value)
+                }}
+                value={codeMirrorValue}
+                options={{
+                    mode: language,
+                    theme:
+                        themes.find(({ id }) => theme === id)?.value ||
+                        'material',
+                    lineNumbers: true,
+                    lineWrapping: true,
+                }}
+            ></CodeMirror>
+        </Box>
+    )
+
     if (location.pathname !== '/mint') {
-        return null
+        return codeMirror
     }
 
     return (
@@ -299,37 +333,7 @@ const CodeEditor = () => {
                         </Button>
                     </Center>
                 </Box>
-                <Box
-                    ref={ref}
-                    position="absolute"
-                    w="2xl"
-                    top="-100000"
-                    left="-10000"
-                    borderWidth="1px"
-                    margin="auto"
-                    bgColor="black"
-                >
-                    <Image
-                        className="controls"
-                        src={controls}
-                        m={1.5}
-                        position="relative"
-                    />
-                    <CodeMirror
-                        onBeforeChange={(_editor, _data, value) => {
-                            setCodeMirrorValue(value)
-                        }}
-                        value={codeMirrorValue}
-                        options={{
-                            mode: language,
-                            theme:
-                                themes.find(({ id }) => theme === id)?.value ||
-                                'material',
-                            lineNumbers: true,
-                            lineWrapping: true,
-                        }}
-                    ></CodeMirror>
-                </Box>
+                {codeMirror}
             </Box>
         </Box>
     )
