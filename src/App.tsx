@@ -1,7 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import { MoralisProvider } from 'react-moralis'
 import { BrowserRouter } from 'react-router-dom'
-import { Routes, Route } from 'react-router-dom'
 import theme from './theme'
 
 import CodeEditor from './components/CodeEditor'
@@ -16,10 +15,7 @@ function App() {
             >
                 <ChakraProvider theme={theme}>
                     <Navigation />
-                    <Routes>
-                        <Route path="/" element={<div>explore</div>} />
-                        <Route path="mint" element={<CodeEditor />} />
-                    </Routes>
+                    <CodeEditor />
                 </ChakraProvider>
             </MoralisProvider>
         </BrowserRouter>

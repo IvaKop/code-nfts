@@ -13,8 +13,8 @@ import {
     Select,
     Heading,
 } from '@chakra-ui/react'
-import { useMoralisFile } from 'react-moralis'
-
+import { useMoralisFile, useMoralis } from 'react-moralis'
+import { useLocation } from 'react-router'
 import { ethers, Contract } from 'ethers'
 import codeNFTs from '../artifacts/contracts/CodeNFTs.sol/CodeNFTs.json'
 
@@ -72,6 +72,7 @@ const themes = [
 ]
 
 const CodeEditor = () => {
+    const location = useLocation()
     const ref = useRef(null)
     const [name, setName] = useState('')
     const [theme, setTheme] = useState(null)
@@ -84,9 +85,9 @@ const CodeEditor = () => {
     const [gameContract, setGameContract] = useState<null | Contract>(null)
     const [isMinting, setIsMinting] = useState(false)
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [image, takeScreenshot] = useScreenshot()
+    const [, takeScreenshot] = useScreenshot()
     const { saveFile } = useMoralisFile()
+    const { user } = useMoralis()
     const getImage = () => takeScreenshot(ref.current)
 
     useEffect(() => {
@@ -119,8 +120,14 @@ const CodeEditor = () => {
             console.log(
                 `NFTMinted - sender: ${sender} tokenId: ${tokenId.toNumber()} themeId: ${themeId.toNumber()}}`,
             )
-            setTheme(themeId.toNumber())
-            setTokenId(tokenId.toNumber())
+
+            if (
+                sender.toLowerCase() ===
+                user?.attributes.ethAddress.toLowerCase()
+            ) {
+                setTheme(themeId.toNumber())
+                setTokenId(tokenId.toNumber())
+            }
         }
 
         if (gameContract) {
@@ -132,7 +139,7 @@ const CodeEditor = () => {
                 gameContract.off('NFTMinted', onTokenMint)
             }
         }
-    }, [gameContract])
+    }, [gameContract, user])
 
     useEffect(() => {
         if (tokenId && theme && isMinting) {
@@ -216,6 +223,10 @@ const CodeEditor = () => {
         }
     }
 
+    if (location.pathname !== '/mint') {
+        return null
+    }
+
     return (
         <Box
             borderWidth="1px"
@@ -266,7 +277,7 @@ const CodeEditor = () => {
                                 lineWrapping: true,
                             }}
                             onChange={(_editor, _data, value) => {
-                                setCodeMirrorValue(value)
+                                !isMinting && setCodeMirrorValue(value)
                             }}
                             value={codeMirrorValue}
                         />
