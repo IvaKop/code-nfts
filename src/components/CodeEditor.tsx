@@ -135,7 +135,7 @@ const CodeEditor = () => {
     }, [gameContract])
 
     useEffect(() => {
-        if (tokenId && theme) {
+        if (tokenId && theme && isMinting) {
             const setTokenURI = async () => {
                 const newImage = await getImage()
                 const uploadMetadata = async () => {
@@ -189,15 +189,13 @@ const CodeEditor = () => {
                         await mintTxn.wait()
                         console.log('uriTxn:', mintTxn)
                         setIsMinting(false)
-                        setTokenId(null)
-                        setTheme(null)
                     } catch (error) {
                         console.warn('URIAction Error:', error)
                         setIsMinting(false)
-                        setTokenId(null)
-                        setTheme(null)
                     }
                 }
+                setTokenId(null)
+                setTheme(null)
             }
             setTokenURI()
         }

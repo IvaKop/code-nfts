@@ -4,10 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-
 import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
-
-import "hardhat/console.sol";
 
 contract CodeNFTs is ERC721URIStorage, Ownable, VRFConsumerBase {
     using Counters for Counters.Counter;
@@ -53,8 +50,6 @@ contract CodeNFTs is ERC721URIStorage, Ownable, VRFConsumerBase {
         _safeMint(requestToSender[requestId], itemId);
         _tokenIds.increment();
 
-        console.log("Minted NFT w/ tokenId %s and themeId %s", itemId, themeId);
-
         emit NFTMinted(requestToSender[requestId], itemId, themeId);
     }
 
@@ -63,7 +58,6 @@ contract CodeNFTs is ERC721URIStorage, Ownable, VRFConsumerBase {
                 _isApprovedOrOwner(_msgSender(), tokenId),
                 "ERC721: transfer caller is not owner nor approved"
             );
-        require(bytes(tokenURI(tokenId)).length == 0, "ERC721: metadata URI for this token already exists");
         _setTokenURI(tokenId, tokenUri);
     }
 
