@@ -3,6 +3,7 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@chainlink/contracts": "^0.2.2",
         "@chakra-ui/icons": "^1.0.17",
         "@chakra-ui/react": "^1.6.10",
         "@emotion/react": "^11.5.0",

@@ -15,7 +15,6 @@ import {
 } from '@chakra-ui/react'
 import { useMoralisFile } from 'react-moralis'
 
-// web3 magic
 import { ethers, Contract } from 'ethers'
 import codeNFTs from '../artifacts/contracts/CodeNFTs.sol/CodeNFTs.json'
 
@@ -30,14 +29,18 @@ require('codemirror/mode/php/php')
 require('codemirror/mode/ruby/ruby')
 require('codemirror/mode/markdown/markdown')
 
-//'3024-night', 'abcdef', 'ambiance', 'base16-dark', 'bespin', 'blackboard', 'cobalt', 'colorforth', 'dracula', 'erlang-dark', 'hopscotch', 'icecoder', 'isotope', 'lesser-dark', 'liquibyte', 'material', 'mbo', 'mdn-like', 'monokai'
-
+// Themes
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/material.css'
-// import 'codemirror/theme/3024-night.css'
-// import 'codemirror/theme/ambiance.css'
-// import 'codemirror/theme/bespin.css'
-// import 'codemirror/theme/base16-light.css'
+import 'codemirror/theme/ayu-mirage.css'
+import 'codemirror/theme/base16-dark.css'
+import 'codemirror/theme/blackboard.css'
+import 'codemirror/theme/dracula.css'
+import 'codemirror/theme/bespin.css'
+import 'codemirror/theme/icecoder.css'
+import 'codemirror/theme/yonce.css'
+import 'codemirror/theme/moxer.css'
+import 'codemirror/theme/monokai.css'
 
 import './CodeEditor.css'
 
@@ -55,21 +58,36 @@ const languages = [
     { value: 'yaml', label: 'YAML' },
 ]
 
+const themes = [
+    { id: 1, value: 'material', label: 'Material' },
+    { id: 2, value: 'ayu-mirage', label: 'AyuMirage' },
+    { id: 3, value: 'base16-dark', label: 'Base16Dark' },
+    { id: 4, value: 'blackboard', label: 'Blackboard' },
+    { id: 5, value: 'dracula', label: 'Dracula' },
+    { id: 6, value: 'bespin', label: 'Bespin' },
+    { id: 7, value: 'icecoder', label: 'Icecoder' },
+    { id: 8, value: 'yonce', label: 'Yonce' },
+    { id: 9, value: 'moxer', label: 'Moxer' },
+    { id: 10, value: 'monokai', label: 'Monokai' },
+]
+
 const CodeEditor = () => {
     const ref = useRef(null)
     const [name, setName] = useState('')
+    const [theme, setTheme] = useState(null)
+    const [tokenId, setTokenId] = useState(null)
     const [language, setLanguage] = useState('javascript')
     const [codeMirrorValue, setCodeMirrorValue] = useState(
-        'function mintMyAwesomeCodeNFT(){\n// White some amazing code here! \n}',
+        'function mintMyAwesomeCodeNFT(){\n// Write some amazing code here! \n}',
     )
 
     const [gameContract, setGameContract] = useState<null | Contract>(null)
     const [isMinting, setIsMinting] = useState(false)
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [image, takeScreenshot] = useScreenshot()
-    const getImage = () => takeScreenshot(ref.current)
-
     const { saveFile } = useMoralisFile()
+    const getImage = () => takeScreenshot(ref.current)
 
     useEffect(() => {
         const { ethereum } = window as any
@@ -101,59 +119,8 @@ const CodeEditor = () => {
             console.log(
                 `NFTMinted - sender: ${sender} tokenId: ${tokenId.toNumber()} themeId: ${themeId.toNumber()}}`,
             )
-            const uploadMetadata = async () => {
-                if (image) {
-                    const imageFile = await saveFile(
-                        'image.png',
-                        { base64: image },
-                        { saveIPFS: true },
-                    )
-                    const metadata = {
-                        name: name,
-                        description:
-                            'This is a Code NFT - a custom made and unique code snippet',
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        image: imageFile?._ipfs,
-                        attributes: [
-                            {
-                                trait_type: 'Language',
-                                value: languages.find(
-                                    ({ value }) => language === value,
-                                )?.label,
-                            },
-                            { trait_type: 'Code theme', value: 'material' },
-                        ],
-                    }
-                    const metadataFile = await saveFile(
-                        'metadata.json',
-                        { base64: btoa(JSON.stringify(metadata)) },
-                        { saveIPFS: true },
-                    )
-
-                    console.log(metadataFile)
-                    return metadataFile
-                }
-            }
-            const metadata = await uploadMetadata()
-
-            if (metadata && gameContract) {
-                try {
-                    const mintTxn = await gameContract.setTokenURI(
-                        tokenId,
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore
-                        `ipfs://${metadata._hash}`,
-                    )
-                    await mintTxn.wait()
-
-                    console.log('uriTxn:', mintTxn)
-                    setIsMinting(false)
-                } catch (error) {
-                    console.warn('URIAction Error:', error)
-                    setIsMinting(false)
-                }
-            }
+            setTheme(themeId.toNumber())
+            setTokenId(tokenId.toNumber())
         }
 
         if (gameContract) {
@@ -165,15 +132,84 @@ const CodeEditor = () => {
                 gameContract.off('NFTMinted', onTokenMint)
             }
         }
-    }, [gameContract, image, name])
+    }, [gameContract])
+
+    useEffect(() => {
+        if (tokenId && theme) {
+            const setTokenURI = async () => {
+                const newImage = await getImage()
+                const uploadMetadata = async () => {
+                    if (newImage) {
+                        const imageFile = await saveFile(
+                            'codeNFT.png',
+                            { base64: newImage },
+                            { saveIPFS: true },
+                        )
+                        const metadata = {
+                            name: name,
+                            description:
+                                'This is a Code NFT - a custom made and unique code snippet',
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            image: imageFile?._ipfs,
+                            background_color: '#000000',
+                            attributes: [
+                                {
+                                    trait_type: 'Language',
+                                    value: languages.find(
+                                        ({ value }) => language === value,
+                                    )?.label,
+                                },
+                                {
+                                    trait_type: 'Code theme',
+                                    value: themes.find(({ id }) => theme === id)
+                                        ?.label,
+                                },
+                            ],
+                        }
+                        const metadataFile = await saveFile(
+                            'metadata.json',
+                            { base64: btoa(JSON.stringify(metadata)) },
+                            { saveIPFS: true },
+                        )
+
+                        return metadataFile
+                    }
+                }
+                const metadata = await uploadMetadata()
+
+                if (metadata && gameContract) {
+                    try {
+                        const mintTxn = await gameContract.setTokenURI(
+                            tokenId,
+                            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                            // @ts-ignore
+                            `ipfs://${metadata._hash}`,
+                        )
+                        await mintTxn.wait()
+                        console.log('uriTxn:', mintTxn)
+                        setIsMinting(false)
+                        setTokenId(null)
+                        setTheme(null)
+                    } catch (error) {
+                        console.warn('URIAction Error:', error)
+                        setIsMinting(false)
+                        setTokenId(null)
+                        setTheme(null)
+                    }
+                }
+            }
+            setTokenURI()
+        }
+    }, [tokenId, theme, name, gameContract, isMinting])
 
     const mint = async () => {
         try {
-            getImage()
             if (gameContract) {
                 setIsMinting(true)
                 console.log('Minting in progress...')
-                const mintTxn = await gameContract.mint()
+                const mintTxn = await gameContract.requestRandomTheme()
+                console.log('mintTxn:', mintTxn)
                 await mintTxn.wait()
             }
         } catch (error) {
@@ -254,7 +290,6 @@ const CodeEditor = () => {
                         </Button>
                     </Center>
                 </Box>
-
                 <Box
                     ref={ref}
                     position="absolute"
@@ -278,7 +313,9 @@ const CodeEditor = () => {
                         value={codeMirrorValue}
                         options={{
                             mode: language,
-                            theme: 'material',
+                            theme:
+                                themes.find(({ id }) => theme === id)?.value ||
+                                'material',
                             lineNumbers: true,
                             lineWrapping: true,
                         }}

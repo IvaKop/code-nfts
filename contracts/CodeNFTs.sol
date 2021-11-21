@@ -5,40 +5,58 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
+import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
+
 import "hardhat/console.sol";
 
-contract CodeNFTs is ERC721URIStorage, Ownable {
-
+contract CodeNFTs is ERC721URIStorage, Ownable, VRFConsumerBase {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+
+    bytes32 internal keyHash;
+    uint256 internal fee;
+
+
+    mapping(uint256 => NFTAttributes) public nftAttributes;
+    mapping(bytes32 => uint256) private requestToTokenId;
+    mapping(bytes32 => address) private requestToSender;
 
     struct NFTAttributes {      
         uint themeId;
     }
 
-    mapping(uint256 => NFTAttributes) public nftAttributes;
-
-    constructor() ERC721("Code Snippet NFTs", "CODE") {
+    constructor(address _VRFCoordinator, address _LinkToken, bytes32 _keyhash)
+    VRFConsumerBase(_VRFCoordinator, _LinkToken) 
+    ERC721("Code NFTs", "CODE")
+    {
         _tokenIds.increment();
+        keyHash = _keyhash;
+        fee = 0.1 * 10 ** 18; // 0.1 LINK 
+    }   
+  
+
+    function requestRandomTheme () public {
+        require(LINK.balanceOf(address(this)) >= fee, "Not enough LINK - fill contract with faucet");
+        bytes32 requestId = requestRandomness(keyHash, fee);
+        requestToTokenId[requestId] = _tokenIds.current();
+        requestToSender[requestId] = _msgSender();
     }
 
-    function mint () public {
-         uint256 themeId = 1;
-         uint256 newItemId = _tokenIds.current();
+    function fulfillRandomness(bytes32 requestId, uint256 randomNumber) internal override {
+        uint256 itemId = requestToTokenId[requestId];
+        uint256 themeId = (randomNumber % 10) + 1;
 
-        _safeMint(_msgSender(), newItemId);
-       
-
-        nftAttributes[newItemId] = NFTAttributes({
+        nftAttributes[itemId] = NFTAttributes({
             themeId: themeId
         });
 
-        console.log("Minted NFT w/ tokenId %s and themeId %s", newItemId, themeId);
-
+        _safeMint(requestToSender[requestId], itemId);
         _tokenIds.increment();
-        emit NFTMinted(_msgSender(), newItemId, themeId);
-    }
 
+        console.log("Minted NFT w/ tokenId %s and themeId %s", itemId, themeId);
+
+        emit NFTMinted(requestToSender[requestId], itemId, themeId);
+    }
 
     function setTokenURI (uint256 tokenId, string memory tokenUri) public {
         require(
