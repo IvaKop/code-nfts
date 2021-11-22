@@ -88,7 +88,6 @@ const CodeEditor = () => {
     const [, takeScreenshot] = useScreenshot()
     const { saveFile } = useMoralisFile()
     const { user } = useMoralis()
-    const getImage = () => takeScreenshot(ref.current)
 
     useEffect(() => {
         const { ethereum } = window as any
@@ -142,6 +141,7 @@ const CodeEditor = () => {
     }, [gameContract, user])
 
     useEffect(() => {
+        const getImage = () => takeScreenshot(ref.current)
         if (tokenId && theme && isMinting) {
             const setTokenURI = async () => {
                 const newImage = await getImage()
@@ -206,7 +206,8 @@ const CodeEditor = () => {
             }
             setTokenURI()
         }
-    }, [tokenId, theme, name, gameContract, isMinting])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [tokenId, theme, name, gameContract, isMinting, language])
 
     const mint = async () => {
         try {
