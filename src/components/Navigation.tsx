@@ -22,10 +22,12 @@ import {
 } from '@chakra-ui/icons'
 
 import { Link as RouterLink } from 'react-router-dom'
+import { useMoralis } from 'react-moralis'
 
 import Auth from './Auth'
 
 export default function WithSubnavigation() {
+    const { isAuthenticated } = useMoralis()
     const { isOpen, onToggle } = useDisclosure()
 
     return (
@@ -46,28 +48,33 @@ export default function WithSubnavigation() {
                     ml={{ base: -2 }}
                     display={{ base: 'flex', md: 'none' }}
                 >
-                    <IconButton
-                        onClick={onToggle}
-                        icon={
-                            isOpen ? (
-                                <CloseIcon w={3} h={3} />
-                            ) : (
-                                <HamburgerIcon w={5} h={5} />
-                            )
-                        }
-                        variant={'ghost'}
-                        aria-label={'Toggle Navigation'}
-                    />
+                    {isAuthenticated && (
+                        <IconButton
+                            onClick={onToggle}
+                            icon={
+                                isOpen ? (
+                                    <CloseIcon w={3} h={3} />
+                                ) : (
+                                    <HamburgerIcon w={5} h={5} />
+                                )
+                            }
+                            variant={'ghost'}
+                            aria-label={'Toggle Navigation'}
+                        />
+                    )}
                 </Flex>
+
                 <Flex
                     flex={{ base: 1 }}
                     justify={{ base: 'center', md: 'start' }}
                 >
                     <UpDownIcon transform="rotate(90deg)" fontSize="x-large" />
 
-                    <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-                        <DesktopNav />
-                    </Flex>
+                    {isAuthenticated && (
+                        <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
+                            <DesktopNav />
+                        </Flex>
+                    )}
                 </Flex>
                 <Stack
                     flex={{ base: 1, md: 0 }}
@@ -79,9 +86,11 @@ export default function WithSubnavigation() {
                 </Stack>
             </Flex>
 
-            <Collapse in={isOpen} animateOpacity>
-                <MobileNav />
-            </Collapse>
+            {isAuthenticated && (
+                <Collapse in={isOpen} animateOpacity>
+                    <MobileNav />
+                </Collapse>
+            )}
         </Box>
     )
 }
@@ -147,14 +156,14 @@ const DesktopSubNav = ({ label, to, subLabel }: NavItem) => {
             display={'block'}
             p={2}
             rounded={'md'}
-            _hover={{ bg: useColorModeValue('pink.50', 'gray.900') }}
+            _hover={{ bg: useColorModeValue('green.50', 'gray.900') }}
             as={RouterLink}
         >
             <Stack direction={'row'} align={'center'}>
                 <Box>
                     <Text
                         transition={'all .3s ease'}
-                        _groupHover={{ color: 'pink.400' }}
+                        _groupHover={{ color: 'green.400' }}
                         fontWeight={500}
                     >
                         {label}
@@ -174,7 +183,7 @@ const DesktopSubNav = ({ label, to, subLabel }: NavItem) => {
                     flex={1}
                 >
                     <Icon
-                        color={'pink.400'}
+                        color={'green.400'}
                         w={5}
                         h={5}
                         as={ChevronRightIcon}
@@ -276,21 +285,5 @@ const NAV_ITEMS: Array<NavItem> = [
     {
         label: 'My Code NFTs',
         to: '/my-code-nfts',
-        // children: [
-        //     {
-        //         label: 'My NFTs',
-        //         subLabel: 'See your tokens',
-        //         to: '#',
-        //     },
-        //     {
-        //         label: 'Liked',
-        //         subLabel: 'See liked NFTs',
-        //         to: '#',
-        //     },
-        // ],
-    },
-    {
-        label: 'About the project',
-        to: '/about',
     },
 ]

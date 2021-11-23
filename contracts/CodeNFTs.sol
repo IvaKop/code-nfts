@@ -24,7 +24,7 @@ contract CodeNFTs is ERC721URIStorage, Ownable, VRFConsumerBase {
 
     constructor(address _VRFCoordinator, address _LinkToken, bytes32 _keyhash)
     VRFConsumerBase(_VRFCoordinator, _LinkToken) 
-    ERC721("Code NFTs", "CODE")
+    ERC721("CodeNFTs", "CODE")
     {
         _tokenIds.increment();
         keyHash = _keyhash;

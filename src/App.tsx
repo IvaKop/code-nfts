@@ -1,34 +1,39 @@
 import { ChakraProvider } from '@chakra-ui/react'
-import { MoralisProvider } from 'react-moralis'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import theme from './theme'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { useMoralis } from 'react-moralis'
 
-import CodeEditor from './components/CodeEditor'
+import Mint from './components/Mint'
 import Navigation from './components/Navigation'
 import Explore from './components/Explore'
+import MyNFTs from './components/MyNFTs'
+import Welcome from './components/Welcome'
 
 const queryClient = new QueryClient()
 
 function App() {
+    const { isAuthenticated } = useMoralis()
     return (
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
-                {process.env.REACT_APP_MORALIS_APP_ID &&
-                    process.env.REACT_APP_MORALIS_SERVER_URL && (
-                        <MoralisProvider
-                            appId={process.env.REACT_APP_MORALIS_APP_ID}
-                            serverUrl={process.env.REACT_APP_MORALIS_SERVER_URL}
-                        >
-                            <ChakraProvider theme={theme}>
-                                <Navigation />
-                                <CodeEditor />
-                                <Routes>
-                                    <Route path="/" element={<Explore />} />
-                                </Routes>
-                            </ChakraProvider>
-                        </MoralisProvider>
+                <ChakraProvider theme={theme}>
+                    <Navigation />
+                    {isAuthenticated ? (
+                        <>
+                            <Mint />
+                            <Routes>
+                                <Route path="/" element={<Explore />} />
+                                <Route
+                                    path="/my-code-nfts"
+                                    element={<MyNFTs />}
+                                />
+                            </Routes>
+                        </>
+                    ) : (
+                        <Welcome />
                     )}
+                </ChakraProvider>
             </BrowserRouter>
         </QueryClientProvider>
     )

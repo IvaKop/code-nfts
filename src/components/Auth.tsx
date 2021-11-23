@@ -32,11 +32,12 @@ const Auth = () => {
         <Button
             onClick={authenticateUser}
             isLoading={isWeb3EnableLoading || isAuthenticating}
-            bg={'pink.400'}
+            bg={'green.400'}
             href={'#'}
+            size="lg"
             color="white"
             _hover={{
-                bg: 'pink.300',
+                bg: 'green.300',
             }}
         >
             Connect wallet

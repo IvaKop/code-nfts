@@ -3,18 +3,19 @@ import { Flex, Box, Image, Badge, useColorModeValue } from '@chakra-ui/react'
 type NFTCardProps = {
     imgUrl: string
     title: string
+    traits: { value: string }[]
 }
 
-const NFTCard = ({ imgUrl, title }: NFTCardProps) => {
+const NFTCard = ({ imgUrl, title, traits }: NFTCardProps) => {
     return (
-        <Flex p={50} w="full" alignItems="center" justifyContent="center">
+        <Flex p={5} w="full" alignItems="center" justifyContent="center">
             <Box
                 bg={useColorModeValue('white', 'gray.800')}
-                maxW="3xl"
-                borderWidth="1px"
+                maxW="2xl"
                 rounded="lg"
-                shadow="lg"
+                shadow="2xl"
                 position="relative"
+                borderWidth="1px"
             >
                 <Image
                     src={imgUrl}
@@ -22,28 +23,23 @@ const NFTCard = ({ imgUrl, title }: NFTCardProps) => {
                     roundedTop="lg"
                 />
 
-                <Box p="6">
+                <Box p={6}>
                     <Box d="flex" alignItems="baseline">
-                        <Badge
-                            rounded="full"
-                            px="2"
-                            fontSize="0.8em"
-                            colorScheme="red"
-                            mr={2}
-                        >
-                            New
-                        </Badge>
-                        <Badge
-                            rounded="full"
-                            px="2"
-                            fontSize="0.8em"
-                            colorScheme="blue"
-                        >
-                            New
-                        </Badge>
+                        {traits.map((trait, i) => (
+                            <Badge
+                                key={trait.value}
+                                rounded="full"
+                                px="2"
+                                fontSize="0.8em"
+                                colorScheme={i % 2 === 1 ? 'blue' : 'green'}
+                                mr={2}
+                            >
+                                {trait.value}
+                            </Badge>
+                        ))}
                     </Box>
                     <Flex
-                        mt="1"
+                        mt="4"
                         justifyContent="space-between"
                         alignContent="center"
                     >

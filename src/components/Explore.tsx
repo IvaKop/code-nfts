@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react'
+import { Box, Heading, Text } from '@chakra-ui/react'
 import { useInfiniteQuery } from 'react-query'
 import { Button } from '@chakra-ui/react'
 import NFTCard from './NFTCard'
@@ -23,7 +23,7 @@ const Explore = () => {
         })
 
     // const Web3Api = useMoralisWeb3Api()
-    // const { fetch, data } = useMoralisWeb3ApiCall(
+    // const { fetch, data: web3data } = useMoralisWeb3ApiCall(
     //     Web3Api.token.getAllTokenIds,
     //     {
     //         chain: 'rinkeby',
@@ -31,10 +31,16 @@ const Explore = () => {
     //     },
     // )
 
-    console.log(data)
+    // console.log(web3data)
 
     return (
         <Box p={8}>
+            <Heading textAlign="center" mb={10}>
+                Explore the rich world of{' '}
+                <Text as="span" color={'green.400'}>
+                    Code NFTs
+                </Text>
+            </Heading>
             {data &&
                 data.pages.map(page =>
                     page.results.assets.map((nft: any) => (
@@ -42,17 +48,20 @@ const Explore = () => {
                             key={nft.id}
                             imgUrl={nft.image_original_url}
                             title={nft.name}
+                            traits={nft.traits}
                         />
                     )),
                 )}
-            {hasNextPage && (
-                <Button
-                    isLoading={isFetchingNextPage}
-                    onClick={() => fetchNextPage()}
-                >
-                    Load more
-                </Button>
-            )}
+            <Box textAlign="center">
+                {hasNextPage && (
+                    <Button
+                        isLoading={isFetchingNextPage}
+                        onClick={() => fetchNextPage()}
+                    >
+                        Load more
+                    </Button>
+                )}
+            </Box>
         </Box>
     )
 }

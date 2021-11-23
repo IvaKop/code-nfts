@@ -12,6 +12,7 @@ import {
     Input,
     Select,
     Heading,
+    Text,
 } from '@chakra-ui/react'
 import { useMoralisFile, useMoralis } from 'react-moralis'
 import { useLocation } from 'react-router'
@@ -71,7 +72,7 @@ const themes = [
     { id: 10, value: 'monokai', label: 'Monokai' },
 ]
 
-const CodeEditor = () => {
+const Mint = () => {
     const location = useLocation()
     const ref = useRef(null)
     const [name, setName] = useState('')
@@ -231,7 +232,6 @@ const CodeEditor = () => {
             w="2xl"
             top="-100000"
             left="-10000"
-            borderWidth="1px"
             margin="auto"
             bgColor="black"
         >
@@ -273,7 +273,10 @@ const CodeEditor = () => {
         >
             <Box w="2xl" margin="auto" my={10}>
                 <Heading textAlign="center">
-                    Mint your very own Code NFT!
+                    Mint your very own{' '}
+                    <Text as="span" color={'green.400'}>
+                        Code NFT!
+                    </Text>
                 </Heading>
                 <Input
                     mt={10}
@@ -323,10 +326,10 @@ const CodeEditor = () => {
                     <Center mt="5">
                         <Button
                             onClick={mint}
-                            bg={'pink.400'}
+                            bg={'green.400'}
                             color="white"
                             _hover={{
-                                bg: 'pink.300',
+                                bg: 'green.300',
                             }}
                             isLoading={isMinting}
                         >
@@ -340,4 +343,4 @@ const CodeEditor = () => {
     )
 }
 
-export default CodeEditor
+export default Mint
