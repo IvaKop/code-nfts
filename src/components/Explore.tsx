@@ -36,8 +36,8 @@ const Explore = () => {
     return (
         <Box p={8}>
             <Heading textAlign="center" mb={10}>
-                Explore the rich world of{' '}
-                <Text as="span" color={'green.400'}>
+                Explore the world of{' '}
+                <Text as="span" color={'green.400'} fontWeight={800}>
                     Code NFTs
                 </Text>
             </Heading>
@@ -49,6 +49,7 @@ const Explore = () => {
                             imgUrl={nft.image_original_url}
                             title={nft.name}
                             traits={nft.traits}
+                            link={nft.permalink}
                         />
                     )),
                 )}

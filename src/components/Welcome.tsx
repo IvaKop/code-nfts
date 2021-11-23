@@ -12,11 +12,14 @@ const Welcome = () => {
                 py={{ base: 20, md: 36 }}
             >
                 <Heading
-                    fontWeight={600}
+                    fontWeight={800}
                     fontSize={{ base: '2xl', sm: '4xl', md: '6xl' }}
                     lineHeight={'110%'}
                 >
-                    Turn your code ideas <br />
+                    <Text as={'span'} position={'relative'}>
+                        Turn your code ideas
+                    </Text>
+                    <br />
                     <Text as={'span'} color={'green.400'}>
                         into Code NFTs
                     </Text>

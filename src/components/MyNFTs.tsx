@@ -1,13 +1,18 @@
-import { Box, Heading, Text } from '@chakra-ui/react'
+import { Box, Heading, Text, useToast, Button } from '@chakra-ui/react'
 import { useInfiniteQuery } from 'react-query'
-import { Button } from '@chakra-ui/react'
 import NFTCard from './NFTCard'
 import { useMoralis } from 'react-moralis'
 import { Link } from 'react-router-dom'
 import { SearchIcon } from '@chakra-ui/icons'
+import { useEffect, useState } from 'react'
+import { ethers, Contract } from 'ethers'
+import codeNFTs from '../artifacts/contracts/CodeNFTs.sol/CodeNFTs.json'
 
 const MyNFTs = () => {
     const { user } = useMoralis()
+    const [gameContract, setGameContract] = useState<null | Contract>(null)
+    const [isBurning, setIsBurning] = useState(false)
+    const toast = useToast()
 
     const fetchNFTs = async ({ pageParam = 0 }) => {
         const response = await fetch(
@@ -25,11 +30,79 @@ const MyNFTs = () => {
             },
         })
 
+    useEffect(() => {
+        const { ethereum } = window as any
+
+        if (ethereum) {
+            const provider = new ethers.providers.Web3Provider(ethereum)
+            const signer = provider.getSigner()
+
+            if (process.env.REACT_APP_CONTRACT) {
+                const gameContract = new ethers.Contract(
+                    process.env.REACT_APP_CONTRACT,
+                    codeNFTs.abi,
+                    signer,
+                )
+
+                setGameContract(gameContract)
+            }
+        } else {
+            console.log('Ethereum object not found')
+        }
+    }, [])
+
+    useEffect(() => {
+        const onBurn = async (sender: string, tokenId: any) => {
+            console.log(
+                `NFTBurned - sender: ${sender} tokenId: ${tokenId.toNumber()}}`,
+            )
+            toast({
+                title: 'Code NFT successfully burned',
+                description: "You've successfully burned your code NFT",
+                status: 'success',
+                duration: 9000,
+                isClosable: true,
+            })
+        }
+
+        if (gameContract) {
+            gameContract.on('NFTBurned', onBurn)
+        }
+
+        return () => {
+            if (gameContract) {
+                gameContract.off('NFTBurned', onBurn)
+            }
+        }
+    }, [gameContract, user, toast])
+
+    const burn = async (tokenId: string) => {
+        try {
+            if (gameContract) {
+                setIsBurning(true)
+                console.log('Burning in progress...')
+                const burnTxn = await gameContract.burn(tokenId)
+                console.log('burnTxn:', burnTxn)
+                await burnTxn.wait()
+            }
+        } catch (error) {
+            console.warn('BurnAction Error:', error)
+            toast({
+                title: 'An error occured',
+                description: 'An error occured while burning your NFT',
+                status: 'error',
+                duration: 9000,
+                isClosable: true,
+            })
+            setIsBurning(false)
+        }
+    }
+
     return (
         <Box p={8}>
             <Heading textAlign="center" mb={10}>
                 My{' '}
-                <Text as="span" color={'green.400'}>
+                <Text as="span" color={'green.400'} fontWeight={800}>
                     Code NFTs
                 </Text>
             </Heading>
@@ -42,6 +115,9 @@ const MyNFTs = () => {
                                 imgUrl={nft.image_original_url}
                                 title={nft.name}
                                 traits={nft.traits}
+                                link={nft.permalink}
+                                onBurn={() => burn(nft.token_id)}
+                                isBurning={isBurning}
                             />
                         ))
                     ) : (

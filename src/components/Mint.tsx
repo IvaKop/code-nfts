@@ -13,6 +13,7 @@ import {
     Select,
     Heading,
     Text,
+    useToast,
 } from '@chakra-ui/react'
 import { useMoralisFile, useMoralis } from 'react-moralis'
 import { useLocation } from 'react-router'
@@ -74,6 +75,7 @@ const themes = [
 
 const Mint = () => {
     const location = useLocation()
+    const toast = useToast()
     const ref = useRef(null)
     const [name, setName] = useState('')
     const [theme, setTheme] = useState(null)
@@ -197,9 +199,25 @@ const Mint = () => {
                         await mintTxn.wait()
                         console.log('uriTxn:', mintTxn)
                         setIsMinting(false)
+                        toast({
+                            title: 'Code NFT successfully minted',
+                            description:
+                                "You've successfully minted your Code NFT",
+                            status: 'success',
+                            duration: 9000,
+                            isClosable: true,
+                        })
                     } catch (error) {
                         console.warn('URIAction Error:', error)
                         setIsMinting(false)
+                        toast({
+                            title: 'An error occured',
+                            description:
+                                'An error occured while minting your NFT',
+                            status: 'error',
+                            duration: 9000,
+                            isClosable: true,
+                        })
                     }
                 }
                 setTokenId(null)
@@ -229,7 +247,7 @@ const Mint = () => {
         <Box
             ref={ref}
             position="absolute"
-            w="2xl"
+            maxW="2xl"
             top="-100000"
             left="-10000"
             margin="auto"
@@ -263,81 +281,83 @@ const Mint = () => {
     }
 
     return (
-        <Box
-            borderWidth="1px"
-            rounded="lg"
-            shadow="lg"
-            w="3xl"
-            mx="auto"
-            my={10}
-        >
-            <Box w="2xl" margin="auto" my={10}>
-                <Heading textAlign="center">
-                    Mint your very own{' '}
-                    <Text as="span" color={'green.400'}>
-                        Code NFT!
-                    </Text>
-                </Heading>
-                <Input
-                    mt={10}
-                    placeholder="What is the name of your Code NFT?"
-                    value={name}
-                    onChange={e => setName(e.target.value)}
-                />
-                <Select
-                    my={5}
-                    value={language}
-                    onChange={e => setLanguage(e.target.value)}
-                >
-                    {languages.map(({ label, value }) => (
-                        <option value={value} key={value}>
-                            {label}
-                        </option>
-                    ))}
-                </Select>
+        <Box w="100%" p={2}>
+            <Box
+                borderWidth="1px"
+                rounded="lg"
+                shadow="lg"
+                maxW="3xl"
+                mx="auto"
+                my={10}
+            >
+                <Box maxW="2xl" margin="auto" my={10} p={2}>
+                    <Heading textAlign="center">
+                        Mint your{' '}
+                        <Text as="span" color={'green.400'} fontWeight={800}>
+                            Code NFT!
+                        </Text>
+                    </Heading>
+                    <Input
+                        mt={10}
+                        placeholder="What is the name of your Code NFT?"
+                        value={name}
+                        onChange={e => setName(e.target.value)}
+                    />
+                    <Select
+                        my={5}
+                        value={language}
+                        onChange={e => setLanguage(e.target.value)}
+                    >
+                        {languages.map(({ label, value }) => (
+                            <option value={value} key={value}>
+                                {label}
+                            </option>
+                        ))}
+                    </Select>
 
-                <Box w="2xl">
-                    <Box borderWidth="1px" margin="auto">
-                        <Image
-                            className="controls"
-                            src={controls}
-                            m={1.5}
-                            position="relative"
-                        />
-                        <CodeMirror
-                            onBeforeChange={(_editor, _data, value) => {
-                                setCodeMirrorValue(value)
-                            }}
-                            options={{
-                                mode: language,
-                                theme: 'material',
-                                lineNumbers: true,
-                                lineWrapping: true,
-                            }}
-                            onChange={(_editor, _data, value) => {
-                                !isMinting && setCodeMirrorValue(value)
-                            }}
-                            value={codeMirrorValue}
-                        />
+                    <Box maxW="2xl">
+                        <Box borderWidth="1px" margin="auto">
+                            <Image
+                                className="controls"
+                                src={controls}
+                                m={1.5}
+                                position="relative"
+                            />
+                            <CodeMirror
+                                onBeforeChange={(_editor, _data, value) => {
+                                    setCodeMirrorValue(value)
+                                }}
+                                options={{
+                                    mode: language,
+                                    theme: 'material',
+                                    lineNumbers: true,
+                                    lineWrapping: true,
+                                }}
+                                onChange={(_editor, _data, value) => {
+                                    !isMinting && setCodeMirrorValue(value)
+                                }}
+                                value={codeMirrorValue}
+                            />
+                        </Box>
                     </Box>
-                </Box>
 
-                <Box>
-                    <Center mt="5">
-                        <Button
-                            onClick={mint}
-                            bg={'green.400'}
-                            color="white"
-                            _hover={{
-                                bg: 'green.300',
-                            }}
-                            isLoading={isMinting}
-                        >
-                            Mint Code NFT
-                        </Button>
-                    </Center>
+                    <Box>
+                        <Center mt="5">
+                            <Button
+                                onClick={mint}
+                                bg={'green.400'}
+                                color="white"
+                                _hover={{
+                                    bg: 'green.300',
+                                }}
+                                isLoading={isMinting}
+                            >
+                                Mint Code NFT
+                            </Button>
+                        </Center>
+                    </Box>
+                    {codeMirror}
                 </Box>
-                {codeMirror}
             </Box>
         </Box>
     )

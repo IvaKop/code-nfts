@@ -1,7 +1,10 @@
-import { Button } from '@chakra-ui/react'
+import { Button, ButtonProps } from '@chakra-ui/react'
 import { useMoralis } from 'react-moralis'
 
-const Auth = () => {
+type AuthProps = {
+    size?: ButtonProps['size']
+}
+const Auth = ({ size }: AuthProps) => {
     const {
         enableWeb3,
         authenticate,
@@ -34,7 +37,7 @@ const Auth = () => {
             isLoading={isWeb3EnableLoading || isAuthenticating}
             bg={'green.400'}
             href={'#'}
-            size="lg"
+            size={size || 'lg'}
             color="white"
             _hover={{
                 bg: 'green.300',

@@ -1,16 +1,36 @@
-import { Flex, Box, Image, Badge, useColorModeValue } from '@chakra-ui/react'
+import {
+    Flex,
+    Box,
+    Image,
+    Badge,
+    useColorModeValue,
+    Button,
+} from '@chakra-ui/react'
+import { ExternalLinkIcon, DeleteIcon } from '@chakra-ui/icons'
 
 type NFTCardProps = {
     imgUrl: string
     title: string
     traits: { value: string }[]
+    link: string
+    onBurn?: () => void
+    isBurning?: boolean
 }
 
-const NFTCard = ({ imgUrl, title, traits }: NFTCardProps) => {
+const NFTCard = ({
+    imgUrl,
+    title,
+    traits,
+    link,
+    onBurn,
+    isBurning,
+}: NFTCardProps) => {
+    const bgColor = useColorModeValue('gray.100', 'gray.700')
+    // if (!imgUrl) return null
     return (
         <Flex p={5} w="full" alignItems="center" justifyContent="center">
             <Box
-                bg={useColorModeValue('white', 'gray.800')}
+                bg={bgColor}
                 maxW="2xl"
                 rounded="lg"
                 shadow="2xl"
@@ -31,7 +51,7 @@ const NFTCard = ({ imgUrl, title, traits }: NFTCardProps) => {
                                 rounded="full"
                                 px="2"
                                 fontSize="0.8em"
-                                colorScheme={i % 2 === 1 ? 'blue' : 'green'}
+                                colorScheme={i % 2 === 1 ? 'purple' : 'yellow'}
                                 mr={2}
                             >
                                 {trait.value}
@@ -41,7 +61,7 @@ const NFTCard = ({ imgUrl, title, traits }: NFTCardProps) => {
                     <Flex
                         mt="4"
                         justifyContent="space-between"
-                        alignContent="center"
+                        alignItems="center"
                     >
                         <Box
                             fontSize="2xl"
@@ -52,6 +72,32 @@ const NFTCard = ({ imgUrl, title, traits }: NFTCardProps) => {
                         >
                             {title}
                         </Box>
+                        <Flex>
+                            <Button
+                                size="sm"
+                                leftIcon={<ExternalLinkIcon />}
+                                variant="solid"
+                                as="a"
+                                href={link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                mr={2}
+                            >
+                                View on OpenSea
+                            </Button>
+                            {onBurn && (
+                                <Button
+                                    size="sm"
+                                    leftIcon={<DeleteIcon />}
+                                    variant="solid"
+                                    onClick={onBurn}
+                                    color="red.400"
+                                    isLoading={isBurning}
+                                >
+                                    Burn
+                                </Button>
+                            )}
+                        </Flex>
                     </Flex>
                 </Box>
             </Box>
