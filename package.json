@@ -1,5 +1,5 @@
 {
-    "name": "rcode-nfts",
+    "name": "code-nfts",
     "version": "0.1.0",
     "private": true,
     "dependencies": {
@@ -17,6 +17,7 @@
         "@types/jest": "^26.0.15",
         "@types/react": "^17.0.0",
         "@types/react-dom": "^17.0.0",
+        "@walletconnect/web3-provider": "^1.6.6",
         "codemirror": "^5.63.3",
         "ethereum-waffle": "^3.4.0",
         "ethers": "^5.5.1",
@@ -38,7 +39,7 @@
     },
     "scripts": {
         "start": "react-scripts start",
-        "build": "react-scripts build",
+        "build": "react-scripts build && echo '/* /index.html  200' | cat >build/_redirects",
         "test": "react-scripts test",
         "eject": "react-scripts eject",
         "typescript": "tsc --project tsconfig.json --noEmit",

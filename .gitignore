@@ -31,4 +31,7 @@ typechain
 
 #Hardhat files
 cache
-artifacts
+src/artifacts/@chainlink
+src/artifacts/@openzeppelin
+src/artifacts/build-info
+src/artifacts/hardhat

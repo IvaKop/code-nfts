@@ -5,6 +5,7 @@ import {
     Badge,
     useColorModeValue,
     Button,
+    Text,
 } from '@chakra-ui/react'
 import { ExternalLinkIcon, DeleteIcon } from '@chakra-ui/icons'
 
@@ -15,6 +16,7 @@ type NFTCardProps = {
     link: string
     onBurn?: () => void
     isBurning?: boolean
+    description?: string
 }
 
 const NFTCard = ({
@@ -24,9 +26,10 @@ const NFTCard = ({
     link,
     onBurn,
     isBurning,
+    description,
 }: NFTCardProps) => {
     const bgColor = useColorModeValue('gray.100', 'gray.700')
-    // if (!imgUrl) return null
+    if (!imgUrl) return null
     return (
         <Flex p={5} w="full" alignItems="center" justifyContent="center">
             <Box
@@ -63,14 +66,17 @@ const NFTCard = ({
                         justifyContent="space-between"
                         alignItems="center"
                     >
-                        <Box
-                            fontSize="2xl"
-                            fontWeight="semibold"
-                            as="h4"
-                            lineHeight="tight"
-                            isTruncated
-                        >
-                            {title}
+                        <Box mr={2}>
+                            <Box
+                                fontSize="2xl"
+                                fontWeight="semibold"
+                                as="h4"
+                                lineHeight="tight"
+                                isTruncated
+                            >
+                                {title}
+                            </Box>
+                            <Text>{description}</Text>
                         </Box>
                         <Flex>
                             <Button

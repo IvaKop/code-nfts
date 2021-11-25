@@ -1,4 +1,4 @@
-import { Box, Heading, Text, useToast, Button } from '@chakra-ui/react'
+import { Box, Heading, Text, useToast, Button, Spinner } from '@chakra-ui/react'
 import { useInfiniteQuery } from 'react-query'
 import NFTCard from './NFTCard'
 import { useMoralis } from 'react-moralis'
@@ -23,7 +23,7 @@ const MyNFTs = () => {
         return { results, nextOffset: hasNextPage ? pageParam + 1 : undefined }
     }
 
-    const { data, isFetchingNextPage, fetchNextPage, hasNextPage } =
+    const { data, isFetchingNextPage, fetchNextPage, hasNextPage, isLoading } =
         useInfiniteQuery('myNfts', fetchNFTs, {
             getNextPageParam: lastPage => {
                 return lastPage.nextOffset
@@ -84,6 +84,7 @@ const MyNFTs = () => {
                 const burnTxn = await gameContract.burn(tokenId)
                 console.log('burnTxn:', burnTxn)
                 await burnTxn.wait()
+                setIsBurning(false)
             }
         } catch (error) {
             console.warn('BurnAction Error:', error)
@@ -106,6 +107,9 @@ const MyNFTs = () => {
                     Code NFTs
                 </Text>
             </Heading>
+            <Box textAlign="center">
+                {isLoading && <Spinner size="lg" color="green.400" />}
+            </Box>
             {data &&
                 data.pages.map(page =>
                     page.results.assets.length > 0 ? (
@@ -116,6 +120,7 @@ const MyNFTs = () => {
                                 title={nft.name}
                                 traits={nft.traits}
                                 link={nft.permalink}
+                                description={nft.description}
                                 onBurn={() => burn(nft.token_id)}
                                 isBurning={isBurning}
                             />

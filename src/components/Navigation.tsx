@@ -58,8 +58,12 @@ export default function WithSubnavigation() {
                     flex={{ base: 1 }}
                     justify={{ base: 'center', md: 'start' }}
                 >
-                    <UpDownIcon transform="rotate(90deg)" fontSize="x-large" />
-
+                    <RouterLink to={'/'}>
+                        <UpDownIcon
+                            transform="rotate(90deg)"
+                            fontSize="x-large"
+                        />
+                    </RouterLink>
                     {isAuthenticated && (
                         <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
                             <DesktopNav />

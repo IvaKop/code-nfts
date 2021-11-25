@@ -14,6 +14,7 @@ import {
     Heading,
     Text,
     useToast,
+    Textarea,
 } from '@chakra-ui/react'
 import { useMoralisFile, useMoralis } from 'react-moralis'
 import { useLocation } from 'react-router'
@@ -52,7 +53,7 @@ const languages = [
     { value: 'go', label: 'Go' },
     { value: 'xml', label: 'HTML' },
     { value: 'javascript', label: 'JavaScript' },
-    { value: 'markdown', label: 'Markdowm' },
+    { value: 'markdown', label: 'Markdown' },
     { value: 'php', label: 'PHP' },
     { value: 'python', label: 'Python' },
     { value: 'ruby', label: 'Ruby' },
@@ -78,6 +79,7 @@ const Mint = () => {
     const toast = useToast()
     const ref = useRef(null)
     const [name, setName] = useState('')
+    const [description, setDescription] = useState('')
     const [theme, setTheme] = useState(null)
     const [tokenId, setTokenId] = useState(null)
     const [language, setLanguage] = useState('javascript')
@@ -156,9 +158,8 @@ const Mint = () => {
                             { saveIPFS: true },
                         )
                         const metadata = {
-                            name: name,
-                            description:
-                                'This is a Code NFT - a custom made and unique code snippet',
+                            name,
+                            description,
                             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                             // @ts-ignore
                             image: imageFile?._ipfs,
@@ -247,7 +248,7 @@ const Mint = () => {
         <Box
             ref={ref}
             position="absolute"
-            maxW="2xl"
+            w="2xl"
             top="-100000"
             left="-10000"
             margin="auto"
@@ -288,9 +289,9 @@ const Mint = () => {
                 shadow="lg"
                 maxW="3xl"
                 mx="auto"
-                my={10}
+                my={8}
             >
-                <Box maxW="2xl" margin="auto" my={10} p={2}>
+                <Box maxW="2xl" margin="auto" my={8} p={2}>
                     <Heading textAlign="center">
                         Mint your{' '}
                         <Text as="span" color={'green.400'} fontWeight={800}>
@@ -303,8 +304,15 @@ const Mint = () => {
                         value={name}
                         onChange={e => setName(e.target.value)}
                     />
+                    <Textarea
+                        mt={4}
+                        placeholder="Add a description for your Code NFT"
+                        value={description}
+                        onChange={e => setDescription(e.target.value)}
+                        resize="none"
+                    />
                     <Select
-                        my={5}
+                        my={4}
                         value={language}
                         onChange={e => setLanguage(e.target.value)}
                     >

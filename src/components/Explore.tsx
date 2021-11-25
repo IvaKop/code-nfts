@@ -1,6 +1,6 @@
 import { Box, Heading, Text } from '@chakra-ui/react'
 import { useInfiniteQuery } from 'react-query'
-import { Button } from '@chakra-ui/react'
+import { Button, Spinner } from '@chakra-ui/react'
 import NFTCard from './NFTCard'
 
 // import { useMoralisWeb3Api, useMoralisWeb3ApiCall } from 'react-moralis'
@@ -15,7 +15,7 @@ const fetchNFTs = async ({ pageParam = 0 }) => {
 }
 
 const Explore = () => {
-    const { data, isFetchingNextPage, fetchNextPage, hasNextPage } =
+    const { data, isFetchingNextPage, fetchNextPage, hasNextPage, isLoading } =
         useInfiniteQuery('nfts', fetchNFTs, {
             getNextPageParam: lastPage => {
                 return lastPage.nextOffset
@@ -41,17 +41,26 @@ const Explore = () => {
                     Code NFTs
                 </Text>
             </Heading>
+            <Box textAlign="center">
+                {isLoading && <Spinner size="lg" color="green.400" />}
+            </Box>
             {data &&
                 data.pages.map(page =>
-                    page.results.assets.map((nft: any) => (
-                        <NFTCard
-                            key={nft.id}
-                            imgUrl={nft.image_original_url}
-                            title={nft.name}
-                            traits={nft.traits}
-                            link={nft.permalink}
-                        />
-                    )),
+                    page.results.assets
+                        .filter(
+                            (nft: any) =>
+                                nft.owner?.user?.username !== 'NullAddress',
+                        )
+                        .map((nft: any) => (
+                            <NFTCard
+                                key={nft.id}
+                                imgUrl={nft.image_original_url}
+                                title={nft.name}
+                                traits={nft.traits}
+                                link={nft.permalink}
+                                description={nft.description}
+                            />
+                        )),
                 )}
             <Box textAlign="center">
                 {hasNextPage && (
