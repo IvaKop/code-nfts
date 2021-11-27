@@ -8,6 +8,7 @@ import {
     Link,
     useColorModeValue,
     useDisclosure,
+    useToast,
 } from '@chakra-ui/react'
 import { HamburgerIcon, CloseIcon, UpDownIcon } from '@chakra-ui/icons'
 
@@ -15,10 +16,21 @@ import { Link as RouterLink } from 'react-router-dom'
 import { useMoralis } from 'react-moralis'
 
 import Auth from './Auth'
+import { useEffect } from 'react'
 
 export default function WithSubnavigation() {
+    const toast = useToast()
     const { isAuthenticated } = useMoralis()
     const { isOpen, onToggle } = useDisclosure()
+
+    useEffect(() => {
+        toast({
+            title: 'Please use Rinkeby Test Network',
+            status: 'warning',
+            duration: 9000,
+            isClosable: true,
+        })
+    }, [toast])
 
     return (
         <Box>
